@@ -1,0 +1,81 @@
+Data strategy: [{'epoch': 21, 'batch_size': 740, 'image_size': (128, 128), 'data_dir': '160', 'prefix': 'train'}, {'epoch': 11, 'batch_size': 256, 'image_size': (224, 224), 'data_dir': '320', 'prefix': 'train'}, {'epoch': 4, 'batch_size': 196, 'image_size': (224, 224), 'data_dir': '320', 'prefix': 'train'}, {'epoch': 4, 'batch_size': 128, 'image_size': (288, 288), 'data_dir': '320', 'prefix': 'train'}]
+Learning rate strategy:[{'epoch': [0, 6], 'lr_method': 'linear', 'lr': [1.0, 2.0], 'steps': [0, 1296]}, {'epoch': [6, 21], 'lr_method': 'linear', 'lr': [2.0, 0.45], 'steps': [1296, 4536]}, {'epoch': [21, 32], 'lr_method': 'exp', 'lr': [0.45, 0.02], 'steps': [4536, 11411]}, {'epoch': [32, 36], 'lr_method': 'exp', 'lr': [0.02, 0.004], 'steps': [11411, 14679]}, {'epoch': [36, 40], 'lr_method': 'exp', 'lr': [0.004, 0.002], 'steps': [14679, 19683]}]
+Total Max Training Steps: 20308
+Checkpointing every 625 steps
+Saving summary every 625 steps
+PY3.6.7 (default, Oct 21 2018, 04:56:05) 
+[GCC 5.4.0 20160609]TF1.11.0
+Horovod size: Log: 8
+Using preprocessing threads per GPU: Log: 6
+Log:  Step Epoch Speed   Loss  FinLoss   LR   bs   imsize
+Log @train: steps@0 epoch@0.0 im/s@356.66 loss@6.931 total_loss@9.607 lr@1.00000 bs@740 sz@128 top5@0.0081 tm@16.60
+Log @train: steps@1 epoch@0.0 im/s@1475.01 loss@6.897 total_loss@9.571 lr@1.00077 bs@740 sz@128 top5@0.0108 tm@20.61
+Log @train: steps@625 epoch@2.9 im/s@14493.47 loss@3.598 total_loss@4.343 lr@1.48225 bs@740 sz@128 top5@0.5000 tm@275.59
+Log @train: steps@1250 epoch@5.8 im/s@14671.39 loss@3.075 total_loss@4.122 lr@1.96451 bs@740 sz@128 top5@0.6203 tm@527.88
+Log @train: steps@1875 epoch@8.7 im/s@14678.82 loss@2.869 total_loss@3.979 lr@1.72301 bs@740 sz@128 top5@0.6392 tm@780.05
+Log @train: steps@2500 epoch@11.6 im/s@14763.85 loss@2.651 total_loss@3.743 lr@1.42401 bs@740 sz@128 top5@0.6743 tm@1030.76
+Log @train: steps@3125 epoch@14.4 im/s@14753.81 loss@2.398 total_loss@3.437 lr@1.12502 bs@740 sz@128 top5@0.7068 tm@1281.65
+Log @train: steps@3750 epoch@17.3 im/s@14716.34 loss@2.174 total_loss@3.132 lr@0.82602 bs@740 sz@128 top5@0.7338 tm@1533.17
+Log @train: steps@4375 epoch@20.2 im/s@14695.00 loss@1.993 total_loss@2.841 lr@0.52702 bs@740 sz@128 top5@0.7770 tm@1785.06
+Log @train: steps@5000 epoch@21.7 im/s@4518.96 loss@2.125 total_loss@3.070 lr@0.36471 bs@256 sz@224 top5@0.7617 tm@2068.40
+Log @train: steps@5625 epoch@22.7 im/s@4835.35 loss@1.854 total_loss@2.750 lr@0.27481 bs@256 sz@224 top5@0.7891 tm@2333.22
+Log @train: steps@6250 epoch@23.7 im/s@4885.94 loss@1.677 total_loss@2.504 lr@0.20706 bs@256 sz@224 top5@0.8242 tm@2595.30
+Log @train: steps@6875 epoch@24.7 im/s@4901.55 loss@1.669 total_loss@2.435 lr@0.15602 bs@256 sz@224 top5@0.8438 tm@2856.54
+Log @train: steps@7500 epoch@25.7 im/s@4863.58 loss@1.527 total_loss@2.239 lr@0.11756 bs@256 sz@224 top5@0.8633 tm@3119.82
+Log @train: steps@8125 epoch@26.7 im/s@4856.32 loss@1.487 total_loss@2.153 lr@0.08858 bs@256 sz@224 top5@0.8398 tm@3383.49
+Log @train: steps@8750 epoch@27.7 im/s@4882.12 loss@1.435 total_loss@2.061 lr@0.06674 bs@256 sz@224 top5@0.8555 tm@3645.77
+Log @train: steps@9375 epoch@28.7 im/s@4888.43 loss@1.400 total_loss@1.995 lr@0.05029 bs@256 sz@224 top5@0.8711 tm@3907.71
+Log @train: steps@10000 epoch@29.7 im/s@4827.39 loss@1.371 total_loss@1.939 lr@0.03789 bs@256 sz@224 top5@0.8789 tm@4172.97
+Log @train: steps@10625 epoch@30.7 im/s@4897.93 loss@1.238 total_loss@1.785 lr@0.02855 bs@256 sz@224 top5@0.8867 tm@4434.40
+Log @train: steps@11250 epoch@31.7 im/s@4905.26 loss@1.283 total_loss@1.813 lr@0.02151 bs@256 sz@224 top5@0.8711 tm@4695.45
+Log @train: steps@11875 epoch@32.5 im/s@3860.15 loss@1.043 total_loss@1.561 lr@0.01591 bs@196 sz@224 top5@0.9031 tm@4949.42
+Log @train: steps@12500 epoch@33.3 im/s@4221.24 loss@1.222 total_loss@1.730 lr@0.01170 bs@196 sz@224 top5@0.8776 tm@5181.68
+Log @train: steps@13125 epoch@34.0 im/s@4178.66 loss@1.018 total_loss@1.518 lr@0.00860 bs@196 sz@224 top5@0.9235 tm@5416.31
+Log @train: steps@13750 epoch@34.8 im/s@4234.37 loss@1.154 total_loss@1.648 lr@0.00632 bs@196 sz@224 top5@0.8929 tm@5647.85
+Log @train: steps@14375 epoch@35.6 im/s@4218.00 loss@0.896 total_loss@1.386 lr@0.00465 bs@196 sz@224 top5@0.9286 tm@5880.29
+Log @train: steps@15000 epoch@36.2 im/s@2477.66 loss@0.627 total_loss@1.113 lr@0.00383 bs@128 sz@288 top5@0.9766 tm@6138.70
+Log @train: steps@15625 epoch@36.7 im/s@2652.26 loss@0.549 total_loss@1.033 lr@0.00351 bs@128 sz@288 top5@0.9688 tm@6380.10
+Log @train: steps@16250 epoch@37.2 im/s@2660.47 loss@0.556 total_loss@1.038 lr@0.00322 bs@128 sz@288 top5@0.9766 tm@6620.76
+Log @train: steps@16875 epoch@37.7 im/s@2670.05 loss@0.469 total_loss@0.948 lr@0.00295 bs@128 sz@288 top5@0.9844 tm@6860.56
+Log @train: steps@17500 epoch@38.2 im/s@2663.85 loss@0.499 total_loss@0.976 lr@0.00271 bs@128 sz@288 top5@0.9688 tm@7100.91
+Log @train: steps@18125 epoch@38.7 im/s@2683.39 loss@0.574 total_loss@1.048 lr@0.00248 bs@128 sz@288 top5@0.9609 tm@7339.52
+Log @train: steps@18750 epoch@39.2 im/s@2652.59 loss@0.670 total_loss@1.143 lr@0.00228 bs@128 sz@288 top5@0.9688 tm@7580.89
+Log @train: steps@19375 epoch@39.7 im/s@2667.46 loss@0.439 total_loss@0.910 lr@0.00209 bs@128 sz@288 top5@0.9844 tm@7820.92
+Log: Finished in Log: 7963.819097042084
+Log: Evaluating
+Log: Validation dataset size: 50000
+ step  top1    top5     loss   checkpoint_time(UTC)
+Log @eval: count@    5 step@ 3125 top1@43.419 top5@ 70.23 loss@  2.99 time@2018-12-30 17:06:43
+Log @eval: count@    3 step@ 1875 top1@27.057 top5@ 51.14 loss@  3.88 time@2018-12-30 16:58:22
+Log @eval: count@    7 step@ 4375 top1@50.106 top5@ 75.93 loss@  2.57 time@2018-12-30 17:15:07
+Log @eval: count@    6 step@ 3750 top1@32.316 top5@ 57.69 loss@  3.50 time@2018-12-30 17:10:55
+Log @eval: count@    0 step@    0 top1@0.090 top5@  0.50 loss@  6.91 time@2018-12-30 16:45:16
+Log @eval: count@   15 step@ 9375 top1@69.577 top5@ 89.58 loss@  1.26 time@2018-12-30 17:50:29
+Log @eval: count@   14 step@ 8750 top1@68.732 top5@ 89.26 loss@  1.30 time@2018-12-30 17:46:08
+Log @eval: count@   13 step@ 8125 top1@64.918 top5@ 86.63 loss@  1.50 time@2018-12-30 17:41:45
+Log @eval: count@   11 step@ 6875 top1@63.800 top5@ 86.09 loss@  1.54 time@2018-12-30 17:32:58
+Log @eval: count@    8 step@ 5000 top1@55.956 top5@ 80.70 loss@  1.94 time@2018-12-30 17:19:50
+Log @eval: count@   23 step@14375 top1@75.062 top5@ 92.65 loss@  1.00 time@2018-12-30 18:23:22
+Log @eval: count@   22 step@13750 top1@74.758 top5@ 92.62 loss@  1.01 time@2018-12-30 18:19:30
+Log @eval: count@   21 step@13125 top1@74.321 top5@ 92.20 loss@  1.05 time@2018-12-30 18:15:38
+Log @eval: count@   19 step@11875 top1@73.488 top5@ 91.73 loss@  1.08 time@2018-12-30 18:07:51
+Log @eval: count@   16 step@10000 top1@70.188 top5@ 89.99 loss@  1.23 time@2018-12-30 17:54:55
+Log @eval: count@   31 step@19375 top1@75.915 top5@ 93.28 loss@  0.94 time@2018-12-30 18:55:43
+Log @eval: count@   30 step@18750 top1@75.793 top5@ 93.13 loss@  0.94 time@2018-12-30 18:51:43
+Log @eval: count@   29 step@18125 top1@75.823 top5@ 93.10 loss@  0.94 time@2018-12-30 18:47:41
+Log @eval: count@   27 step@16875 top1@75.845 top5@ 93.12 loss@  0.94 time@2018-12-30 18:39:42
+Log @eval: count@   24 step@15000 top1@75.615 top5@ 92.94 loss@  0.95 time@2018-12-30 18:27:41
+Log @eval: count@    2 step@ 1250 top1@23.960 top5@ 46.94 loss@  4.07 time@2018-12-30 16:54:10
+Log @eval: count@    1 step@  625 top1@17.127 top5@ 36.88 loss@  4.62 time@2018-12-30 16:49:57
+Log @eval: count@    4 step@ 2500 top1@29.902 top5@ 54.90 loss@  3.61 time@2018-12-30 17:02:33
+Log @eval: count@   32 step@19681 top1@75.933 top5@ 93.18 loss@  0.94 time@2018-12-30 18:57:41
+Log Finished evaluation
+Log @eval: count@   10 step@ 6250 top1@60.960 top5@ 84.47 loss@  1.65 time@2018-12-30 17:28:37
+Log @eval: count@    9 step@ 5625 top1@58.355 top5@ 82.60 loss@  1.81 time@2018-12-30 17:24:15
+Log @eval: count@   12 step@ 7500 top1@65.553 top5@ 87.31 loss@  1.44 time@2018-12-30 17:37:22
+Log @eval: count@   18 step@11250 top1@73.512 top5@ 91.78 loss@  1.08 time@2018-12-30 18:03:37
+Log @eval: count@   17 step@10625 top1@72.788 top5@ 91.49 loss@  1.11 time@2018-12-30 17:59:16
+Log @eval: count@   20 step@12500 top1@73.910 top5@ 92.04 loss@  1.07 time@2018-12-30 18:11:44
+Log @eval: count@   26 step@16250 top1@75.675 top5@ 92.95 loss@  0.95 time@2018-12-30 18:35:43
+Log @eval: count@   25 step@15625 top1@75.641 top5@ 93.00 loss@  0.95 time@2018-12-30 18:31:42
+Log @eval: count@   28 step@17500 top1@75.669 top5@ 93.01 loss@  0.94 time@2018-12-30 18:43:43
