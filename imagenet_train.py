@@ -4,7 +4,7 @@ Part of codes was based Amazon AWS
 from https://github.com/aws-samples/deep-learning-models/tree/master/models/resnet/tensorflow
 
 they used the Horovod to train the imagenet in 6 and half hours using single p3.16xlarge, by utilizing some convergence technique, we improve the result from
-6 and half hours to 106 mins
+6 and half hours to 104 mins
 
 Author: Min Zhang: min.zhang@ge.com
 
@@ -12,32 +12,19 @@ Author: Min Zhang: min.zhang@ge.com
 
 from __future__ import print_function
 
-try:
-    from builtins import range
-except ImportError:
-    pass
 import tensorflow as tf
 import numpy as np
-from tensorflow.contrib.image.python.ops import distort_image_ops
-from tensorflow.python.ops import data_flow_ops
-from tensorflow.contrib.data.python.ops import interleave_ops
-from tensorflow.contrib.data.python.ops import batching
 import horovod.tensorflow as hvd
 import os
 import sys
 import time
 import argparse
-import random
 import shutil
 import logging
-import math
 import re
-from glob import glob
 from operator import itemgetter
-from tensorflow.python.util import nest
-import dynamicpipe
+import dynamicpipe  
 import resnet50
-from utils import stage, PrefillStagingAreasHook, fp32_trainable_vars, MixedOptimizer
 
 def rank0log(logger, *args, **kwargs):
     if hvd.rank() == 0:
@@ -57,7 +44,7 @@ class LogSessionRunHook(tf.train.SessionRunHook):
         self.epoch = 0.
         self.total_sec = 0.
         self.start_t0 = time.time()
-
+        
     def before_run(self, run_context):
         self.t0 = time.time()
         return tf.train.SessionRunArgs(
@@ -66,9 +53,9 @@ class LogSessionRunHook(tf.train.SessionRunHook):
 
     def after_run(self, run_context, run_values):
         self.elapsed_secs += time.time() - self.t0
-        self.total_sec = time.time() - self.start_t0
+        self.total_sec = time.time() - self.start_t0 
         self.count += 1
-
+        
         global_step, loss, total_loss, lr, batch_size, image_size, top5acc = run_values.results
         self.epoch = self.epoch + batch_size * self.num_gpus / self.num_records
         if global_step == 1 or global_step % self.display_every == 0:
@@ -78,23 +65,23 @@ class LogSessionRunHook(tf.train.SessionRunHook):
             self.elapsed_secs = 0.
             self.count = 0
 
-
+            
 def cnn_model_function(features, labels, mode, params):
     labels = tf.reshape(labels, (-1,))  # Squash unnecessary unary dim
-
+    
     model_dtype = tf.float16
     model_format = 'channels_first'
-
+  
     inputs = features  # TODO: Should be using feature columns?
     is_training = (mode == tf.estimator.ModeKeys.TRAIN)
-
+    
     num_classes = params['n_classes']
     momentum = params['mom']
     weight_decay = params['wdecay']
     num_training_samples= params['num_training_samples']
     num_steps = params['num_steps']
     loss_scale = params['loss_scale']
-
+    
     lr_strategy = params['lr_strategy']
 
     if mode == tf.estimator.ModeKeys.TRAIN:
@@ -129,17 +116,17 @@ def cnn_model_function(features, labels, mode, params):
             }
             return tf.estimator.EstimatorSpec(mode, predictions=predictions)
         loss = tf.losses.sparse_softmax_cross_entropy(logits=logits, labels=labels)
-
-
-
+        
+        
+        
         train_top5acc = tf.reduce_mean(tf.cast(tf.nn.in_top_k(logits, labels, 5), tf.float32))
-
+        
         #loss = tf.reduce_mean(-10 * tf.cast(tf.nn.in_top_k(logits, labels, 5), tf.float32))
-
+        
         loss = tf.identity(loss, name='loss')  # For access by logger (TODO: Better way to access it?)
         if mode == tf.estimator.ModeKeys.EVAL:
             with tf.device(None):
-                # Allow fallback to CPU if no GPU support for these ops
+                # Allow fallback to CPU if no GPU support for these ops                
                 accuracy = tf.metrics.accuracy(
                     labels=labels, predictions=predicted_classes)
                 top5acc = tf.metrics.mean(
@@ -151,34 +138,34 @@ def cnn_model_function(features, labels, mode, params):
                 mode, loss=loss, eval_metric_ops=metrics)
 
         assert (mode == tf.estimator.ModeKeys.TRAIN)
+        
 
-
-
+        
         global_step = tf.train.get_global_step()
 
         batch_size = tf.shape(inputs)[0]
         image_size = tf.shape(inputs)[2]
-
-
+        
+        
         reg_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
         total_loss = tf.add_n([loss] + reg_losses, name='total_loss')
-
+        
         with tf.device('/cpu:0'):  # Allow fallback to CPU if no GPU support for these ops
             learning_rate = dynamicpipe.learning_rate_schedule(lr_strategy, global_step)
 
             learning_rate = tf.identity(learning_rate, 'learning_rate')
             batch_size = tf.identity(batch_size, 'batch_size')
             image_size = tf.identity(image_size, 'image_size')
-
-
+            
+            
             train_top5acc = tf.identity(train_top5acc, 'trn-top5acc')
             tf.summary.scalar('trn-top5acc', train_top5acc)
-
+            
             tf.summary.scalar('learning_rate', learning_rate)
             tf.summary.scalar('batch_size', batch_size)
             tf.summary.scalar('image_size', image_size)
-
-
+            
+            
         opt = tf.train.MomentumOptimizer(
             learning_rate, momentum, use_nesterov=True)
         opt = hvd.DistributedOptimizer(opt)
@@ -193,41 +180,41 @@ def cnn_model_function(features, labels, mode, params):
 
         return tf.estimator.EstimatorSpec(mode, loss=total_loss, train_op=train_op)
 
-
+    
 def add_cli_args():
     cmdline = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-
+    
     cmdline.add_argument('--data_dir', default='/opt/ml/input/data/training',
                          help="""Path to dataset in TFRecord format
                          (aka Example protobufs). Files should be
                          named 'train-*' and 'validation-*'.""")
-
+    
     cmdline.add_argument('--log_dir', default='/opt/ml/model/imagenet_resnet',
                          help="""Directory in which to write training
                          summaries and checkpoints. If the log directory already
                          contains some checkpoints, it tries to resume training
                          from the last saved checkpoint. Pass --clear_log if you
                          want to clear all checkpoints and start a fresh run""")
-
+  
     cmdline.add_argument('--display_every', default=100, type=int,
                          help="""How often (in iterations) to print out
                          running information.""")
-
+   
     cmdline.add_argument('--num_gpus', default=8, type=int,
                          help="""Specify total number of GPUS used to train a checkpointed model during eval.
                                 Used only to calculate epoch number to print during evaluation""")
     cmdline.add_argument('--save_checkpoints_steps', type=int, default=1000)
     cmdline.add_argument('--save_summary_steps', type=int, default=1000)
-
-
+   
+    
     cmdline.add_argument('--mom', default=0.977, type=float,
                          help="""Momentum""")
     cmdline.add_argument('--wdecay', default=0.0005, type=float,
                          help="""Weight decay""")
     cmdline.add_argument('--loss_scale', default=256., type=float,
                          help="""loss scale""")
-
+   
     return cmdline
 
 def sort_and_load_ckpts(log_dir):
@@ -251,7 +238,7 @@ def main():
     os.environ['TF_USE_CUDNN_BATCHNORM_SPATIAL_PERSISTENT'] = '1'
     os.environ['TF_ENABLE_WINOGRAD_NONFUSED'] = '1'
     hvd.init()
-
+    
     config = tf.ConfigProto(allow_soft_placement=True)
     config.gpu_options.visible_device_list = str(hvd.local_rank())
     config.gpu_options.force_gpu_compatible = True  # Force pinned memory
@@ -259,19 +246,19 @@ def main():
     config.inter_op_parallelism_threads = 5
     #config.gpu_options.allow_growth = True
     log_name = 'hvd_train.txt'
-
+    
     '''
       training stratey
     '''
-
-
+    
+    
     training_strategy = [
     {'epoch':[0,4], 'lr': [1.0,3.0],'lr_method':'linear','batch_size':768, 'image_size':(128, 128), 'data_dir':'160', 'prefix':'train'},
     {'epoch':[4,15], 'lr': [3.0,0.01],'lr_method':'linear','batch_size':768, 'image_size':(128, 128), 'data_dir':'160', 'prefix':'train'},
     {'epoch':[15,32], 'lr': [0.2,0.002],'lr_method':'exp','batch_size':256, 'image_size':(224, 224), 'data_dir':'320', 'prefix':'train'},
     {'epoch':[32,37], 'lr': [0.003,0.0005],'lr_method':'linear','batch_size':128, 'image_size':(288, 288), 'data_dir':'320', 'prefix':'train'}
     ]
-
+    
     training_strategy = [
     {'epoch':[0,6], 'lr': [1.0,2.0],'lr_method':'linear','batch_size':740, 'image_size':(128, 128), 'data_dir':'160', 'prefix':'train'},
     {'epoch':[6,21], 'lr': [2.0,0.45],'lr_method':'linear','batch_size':740, 'image_size':(128, 128), 'data_dir':'160', 'prefix':'train'},
@@ -279,35 +266,35 @@ def main():
     {'epoch':[32,36], 'lr': [0.02,0.004],'lr_method':'exp','batch_size':196, 'image_size':(224, 224), 'data_dir':'320', 'prefix':'train'},
     {'epoch':[36,40], 'lr': [0.004,0.002],'lr_method':'exp','batch_size':128, 'image_size':(288, 288), 'data_dir':'320', 'prefix':'train'}
     ]
-
+    
     num_training_samples= 1281167
     num_eval_samples = 50000
-
-
+    
+    
     cmdline = add_cli_args()
     FLAGS, unknown_args = cmdline.parse_known_args()
-
-
-
+    
+    
+   
     do_checkpoint = hvd.rank() == 0
-
-
+    
+   
     barrier = hvd.allreduce(tf.constant(0, dtype=tf.float32))
     tf.Session(config=config).run(barrier)
 
     if hvd.local_rank() == 0 and not os.path.isdir(FLAGS.log_dir):
         os.makedirs(FLAGS.log_dir)
-
+    
     barrier = hvd.allreduce(tf.constant(0, dtype=tf.float32))
     tf.Session(config=config).run(barrier)
 
-
+    
     logger = logging.getLogger(log_name)
     logger.setLevel(logging.INFO)  # INFO, ERROR
-
+    
     ch = logging.StreamHandler()
     ch.setLevel(logging.INFO)
-
+    
     formatter = logging.Formatter('%(message)s')
     ch.setFormatter(formatter)
     logger.addHandler(ch)
@@ -316,25 +303,25 @@ def main():
     fh.setFormatter(formatter)
     # add handlers to logger
     logger.addHandler(fh)
-
+        
     if not FLAGS.save_checkpoints_steps:
         # default to save one checkpoint per epoch
         FLAGS.save_checkpoints_steps = 625
     if not FLAGS.save_summary_steps:
         # default to save one checkpoint per epoch
         FLAGS.save_summary_steps = 625
-
+    
     data_strategy, lr_strategy = dynamicpipe.lr_strategy_parsing(training_strategy, num_training_samples, FLAGS.num_gpus)
-
+    
     num_steps = lr_strategy[-1]['steps'][-1] + FLAGS.display_every
-
+    
     rank0log(logger, 'Data strategy: ' + str(data_strategy))
     rank0log(logger, 'Learning rate strategy:' + str(lr_strategy))
     rank0log(logger, 'Total Max Training Steps: ' + str(num_steps))
     rank0log(logger, 'Checkpointing every ' + str(FLAGS.save_checkpoints_steps) + ' steps')
     rank0log(logger, 'Saving summary every ' + str(FLAGS.save_summary_steps) + ' steps')
 
-
+   
     rank0log(logger, 'PY' + str(sys.version) + 'TF' + str(tf.__version__))
     rank0log(logger, "Horovod size: ", hvd.size())
 
@@ -369,12 +356,13 @@ def main():
             max_steps=num_steps,
             hooks=training_hooks)
     rank0log(logger, "Log: Finished in ", time.time() - start_time)
-
+    
     rank0log(logger, "Log: Evaluating")
     rank0log(logger, "Log: Validation dataset size: 50000")
     eval_strategy = [{'epoch':1, 'batch_size':128, 'image_size':(288, 288), 'data_dir':'320', 'prefix':'validation'}]
-
+    
     #evaluation on single GPU
+    #if hvd.rank() == 0:
     rank0log(logger, ' step  top1    top5     loss   checkpoint_time(UTC)')
     ckpts = sort_and_load_ckpts(FLAGS.log_dir)
     for i, c in enumerate(ckpts):
@@ -394,10 +382,11 @@ def main():
                              c['loss'],
                              time=time.strftime('%Y-%m-%d %H:%M:%S',
                                 time.localtime(c['mtime']))))
-
-
-
-    rank0log(logger, "Log Finished evaluation")
+            
+        
+      
+    rank0log(logger, "Log Finished evaluation") 
 
 if __name__ == '__main__':
     main()
+
