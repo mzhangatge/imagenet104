@@ -1,5 +1,11 @@
-# ImageNet106Mins
-Imagenet Training in 106 Mins to reach 93% in Top 5 Acc
+~~ImageNet106Mins~~
+
+# ImageNet104Mins
+
+<b>Updates</b>:
+Imagenet Training to reach 93% in Top 5 Acc in 6273.32 sec (step 15000, 104Mins)
+
+~~Imagenet Training in 106 Mins to reach 93% in Top 5 Acc~~
 
 The experiments were ran on Amazon AWS Sagemaker, and part of resnet50 model code was from AWS (https://github.com/aws-samples/deep-learning-models/tree/master/models/resnet/tensorflow)
 
@@ -11,7 +17,9 @@ The experiments are reproducible in Sagemaker:
 
 Training Experiment ID: 
 
-https://console.aws.amazon.com/sagemaker/home?region=us-east-1#/jobs/imagenet-ml-p3-16xlarge-2018-12-30-03-23-22-758
+~~https://console.aws.amazon.com/sagemaker/home?region=us-east-1#/jobs/imagenet-ml-p3-16xlarge-2018-12-30-03-23-22-758~~
+
+https://console.aws.amazon.com/sagemaker/home?region=us-east-1#/jobs/imagenet-ml-p3-16xlarge-2019-01-04-22-50-34-217-copy-2
 
 Replicated Experiment:
 
