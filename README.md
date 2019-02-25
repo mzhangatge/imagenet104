@@ -21,11 +21,7 @@ Training Experiment ID:
 
 https://console.aws.amazon.com/sagemaker/home?region=us-east-1#/jobs/imagenet-ml-p3-16xlarge-2019-01-04-22-50-34-217-copy-2
 
-Replicated Experiment:
-
-https://console.aws.amazon.com/sagemaker/home?region=us-east-1#/jobs/imagenet-ml-p3-16xlarge-2018-12-30-03-23-22-758-copy-12-30
-
-Both Experiments reached 93% in TOP5 Acc by steps 15625, around 106 Mins, filter the cloudwatch log by typing "Log".
+this experiments reached 93% in TOP5 Acc by steps 15000, around 104 Mins, filter the cloudwatch log by typing "Log".
 
 Model Artifacts are also available by downloading the models through the sagemaker experiment
 
